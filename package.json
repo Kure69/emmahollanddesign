@@ -1,11 +1,12 @@
 {
   "name": "emma-holland-design",
-  "version": "0.0.1",
+  "version": "0.0.0-development",
   "private": true,
   "author": "Kim Holland <kim@kimmr.com>",
   "license": "ISC",
-  "engines": {
-    "node": "6.10.0"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tripleaxis/emmahollanddesign.git"
   },
   "scripts": {
     "start": "webpack-dev-server",
@@ -13,7 +14,18 @@
     "jest": "jest",
     "lint": "eslint --fix \"{src,test}/**/*.js\"",
     "build": "webpack --env.production",
-    "deploy": "firebase deploy"
+    "deploy": "firebase deploy",
+    "precommit": "npm run lint",
+    "commitmsg": "conventional-changelog-lint -e",
+    "corp-release": "corp-semantic-release -b master"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-customizable"
+    },
+    "cz-customizable": {
+      "config": "config/cz-config.js"
+    }
   },
   "jest": {
     "clearMocks": true,
@@ -45,13 +57,19 @@
     "babel-preset-env": "^1.1.8",
     "babel-preset-react": "^6.23.0",
     "babel-register": "^6.23.0",
+    "conventional-changelog-angular": "^1.3.3",
+    "conventional-changelog-lint": "^1.1.9",
+    "conventional-changelog-lint-config-angular": "^0.4.1",
+    "corp-semantic-release": "^6.0.0",
     "css-loader": "^0.26.1",
+    "cz-customizable": "^5.0.0",
     "eslint": "^3.14.1",
     "eslint-config-defaults": "^9.0.0",
     "eslint-loader": "^1.6.1",
     "eslint-plugin-react": "^6.9.0",
     "file-loader": "^0.10.1",
     "firebase": "^3.4.1",
+    "husky": "^0.13.4",
     "jasmine": "^2.5.3",
     "jasmine-spec-reporter": "^3.2.0",
     "jest": "^19.0.2",
