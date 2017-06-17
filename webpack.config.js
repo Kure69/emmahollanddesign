@@ -1,12 +1,15 @@
 const webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = ({ production } = false) => {
   const config = {
-    entry: ['whatwg-fetch', 'babel-polyfill', './src/index.js'],
+    entry: {
+      main: ['whatwg-fetch', 'babel-polyfill', './src/index.js']
+    },
     bail: true,
     devtool: 'eval-source-map',
     output: {
-      filename: 'bundle.js',
+      filename: '[name].js',
       publicPath: '',
       path: `${__dirname}/public`
     },
@@ -14,6 +17,13 @@ module.exports = ({ production } = false) => {
       inline: true,
       contentBase: './public'
     },
+    plugins: [
+      new ExtractTextPlugin({
+        filename: '[name].css',
+        allChunks: true,
+        disable: !production
+      })
+    ],
     module: {
       rules: [
         {
@@ -26,26 +36,18 @@ module.exports = ({ production } = false) => {
         },
         {
           test: /\.css$/,
-          use: [
-            { loader: 'style-loader' },
-            { loader: 'css-loader' }
-          ]
+          use: ExtractTextPlugin.extract({
+            fallback: 'style-loader',
+            use: 'css-loader?sourceMap&minimize=true'
+          })
         },
         {
           test: /\.less$/,
           exclude: /node_modules/,
-          use: [
-            { loader: 'style-loader' },
-            {
-              loader: 'css-loader',
-              options: {
-                // modules: true,
-                // localIdentName: '[folder]_[hash:base64:5]'
-              }
-            },
-            { loader: 'postcss-loader' },
-            { loader: 'less-loader' }
-          ]
+          use: ExtractTextPlugin.extract({
+            fallback: 'style-loader',
+            use: 'css-loader?sourceMap&minimize=true!postcss-loader?sourceMap!less-loader?sourceMap'
+          })
         },
         {
           test: /\.(png|gif|jpe?g)$/,
@@ -66,7 +68,7 @@ module.exports = ({ production } = false) => {
     console.log('Webpack: Building for Production\n');
     
     config.devtool = 'source-map';
-    config.plugins = [
+    config.plugins = config.plugins.concat([
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify('production')
       }),
@@ -81,7 +83,7 @@ module.exports = ({ production } = false) => {
         }
       }),
       new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
-    ];
+    ]);
   }
   
   return config;
